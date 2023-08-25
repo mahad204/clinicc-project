@@ -23,7 +23,7 @@ Class Action {
 				if($key != 'password' && !is_numeric($key))
 					$_SESSION['login_'.$key] = $value;
 			}
-				return 1;
+			return 1;
 		}else{
 			return 3;
 		}
@@ -65,7 +65,7 @@ Class Action {
 		if(empty($id)){
 			$save = $this->db->query("INSERT INTO users set $data");
 		}else{
-			$save = $this->db->query("UPDATE users set '$data' where id = $id");
+			$save = $this->db->query("UPDATE users set $data' where id = $id");
 		}
 		if($save){
 			return 1;
