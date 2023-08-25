@@ -63,9 +63,9 @@ Class Action {
 		$data .= ", password = '$password' ";
 		$data .= ", type = '$type' ";
 		if(empty($id)){
-			$save = $this->db->query("INSERT INTO users set ".$data);
+			$save = $this->db->query("INSERT INTO users set $data");
 		}else{
-			$save = $this->db->query("UPDATE users set ".$data." where id = ".$id);
+			$save = $this->db->query("UPDATE users set '$data' where id = $id");
 		}
 		if($save){
 			return 1;
@@ -84,9 +84,9 @@ Class Action {
 			return 2;
 			exit;
 		}
-			$save = $this->db->query("INSERT INTO users set ".$data);
+			$save = $this->db->query("INSERT INTO users set $data");
 		if($save){
-			$qry = $this->db->query("SELECT * FROM users where username = '".$email."' and password = '".md5($password)."' ");
+			$qry = $this->db->query("SELECT * FROM users where username = '$email' and password = '".md5($password)."' ");
 			if($qry->num_rows > 0){
 				foreach ($qry->fetch_array() as $key => $value) {
 					if($key != 'passwors' && !is_numeric($key))
@@ -110,12 +110,12 @@ Class Action {
 
 		}
 		
-		// echo "INSERT INTO system_settings set ".$data;
+		// echo "INSERT INTO system_settings set $data";
 		$chk = $this->db->query("SELECT * FROM system_settings");
 		if($chk->num_rows > 0){
-			$save = $this->db->query("UPDATE system_settings set ".$data);
+			$save = $this->db->query("UPDATE system_settings set $data");
 		}else{
-			$save = $this->db->query("INSERT INTO system_settings set ".$data);
+			$save = $this->db->query("INSERT INTO system_settings set $data");
 		}
 		if($save){
 		$query = $this->db->query("SELECT * FROM system_settings limit 1")->fetch_array();
@@ -140,16 +140,16 @@ Class Action {
 			}
 		}
 		if(empty($id)){
-			$save = $this->db->query("INSERT INTO medical_specialty set ".$data);
+			$save = $this->db->query("INSERT INTO medical_specialty set $data");
 		}else{
-			$save = $this->db->query("UPDATE medical_specialty set ".$data." where id=".$id);
+			$save = $this->db->query("UPDATE medical_specialty set '$data' where id=$id");
 		}
 		if($save)
 			return 1;
 	}
 	function delete_category(){
 		extract($_POST);
-		$delete = $this->db->query("DELETE FROM medical_specialty where id = ".$id);
+		$delete = $this->db->query("DELETE FROM medical_specialty where id = $id");
 		if($delete)
 			return 1;
 	}
@@ -169,10 +169,10 @@ Class Action {
 		}
 		$data .=" , specialty_ids = '[".implode(",",$specialty_ids)."]' ";
 		if(empty($id)){
-			$save = $this->db->query("INSERT INTO doctors_list set ".$data);
+			$save = $this->db->query("INSERT INTO doctors_list set $data");
 			$did= $this->db->insert_id;
 		}else{
-			$save = $this->db->query("UPDATE doctors_list set ".$data." where id=".$id);
+			$save = $this->db->query("UPDATE doctors_list set $data"." where id=$id");
 		}
 		if($save){
 			$data = " username = '$email' ";
@@ -183,26 +183,26 @@ Class Action {
 			$data .= ", address = '$clinic_address' ";
 			$data .= ", type = 2";
 			if(empty($id)){
-				$chk = $this->db->query("SELECT * FROM users where username = '$email ")->num_rows;
-				if($chk > 0){
-					return 2;
-					exit;
-				}
-					$data .= ", doctor_id = '$did'";
-
-					$save = $this->db->query("INSERT INTO users set ".$data);
-			}else{
-				$chk = $this->db->query("SELECT * FROM users where username = '$email' and doctor_id != ".$id)->num_rows;
+				$chk = $this->db->query("SELECT * FROM users where username = $email ")->num_rows;
 				if($chk > 0){
 					return 2;
 					exit;
 				}
 					$data .= ", doctor_id = '$id'";
-				$chk2 = $this->db->query("SELECT * FROM users where doctor_id = ".$id)->num_rows;
+
+					$save = $this->db->query("INSERT INTO users set $data");
+			}else{
+				$chk = $this->db->query("SELECT * FROM users where username = '$email' and doctor_id != $id")->num_rows;
+				if($chk > 0){
+					return 2;
+					exit;
+				}
+					$data .= ", doctor_id = '$id'";
+				$chk2 = $this->db->query("SELECT * FROM users where doctor_id = $id")->num_rows;
 					if($chk2 > 0)
-						$save = $this->db->query("UPDATE users set ".$data." where doctor_id = ".$id);
+						$save = $this->db->query("UPDATE users set '$data' where doctor_id = $id");
 					else
-						$save = $this->db->query("INSERT INTO users set ".$data);
+						$save = $this->db->query("INSERT INTO users set $data");
 					
 
 			}
@@ -211,7 +211,7 @@ Class Action {
 	}
 	function delete_doctor(){
 		extract($_POST);
-		$delete = $this->db->query("DELETE FROM doctors_list where id = ".$id);
+		$delete = $this->db->query("DELETE FROM doctors_list where id = $id");
 		if($delete)
 			return 1;
 	}
@@ -225,9 +225,9 @@ Class Action {
 			$data .= ", time_to = '$time_to[$k]' ";
 			if(isset($check[$k])){
 				if($check[$k]>0)
-				$save[] = $this->db->query("UPDATE doctors_schedule set ".$data." where id =".$check[$k]);
+				$save[] = $this->db->query("UPDATE doctors_schedule set '$data' where id = $check[$k]");
 			else
-				$save[] = $this->db->query("INSERT INTO doctors_schedule set ".$data);
+				$save[] = $this->db->query("INSERT INTO doctors_schedule set $data");
 			}
 		}
 
@@ -238,7 +238,7 @@ Class Action {
 
 	function set_appointment(){
 		extract($_POST);
-		$doc = $this->db->query("SELECT * FROM doctors_list where id = ".$doctor_id);
+		$doc = $this->db->query("SELECT * FROM doctors_list where id = $doctor_id");
 		$schedule = date('Y-m-d',strtotime($date)).' '.date('H:i',strtotime($time)).":00";
 		$day = date('l',strtotime($date));
 		$time = date('H:i',strtotime($time)).":00";
@@ -259,16 +259,16 @@ Class Action {
 		if(isset($status))
 		$data .= ", status = '$status' ";
 		if(isset($id) && !empty($id))
-		$save = $this->db->query("UPDATE appointment_list set ".$data." where id = ".$id);
+		$save = $this->db->query("UPDATE appointment_list set $data"." where id = $id");
 		else
-		$save = $this->db->query("INSERT INTO appointment_list set ".$data);
+		$save = $this->db->query("INSERT INTO appointment_list set $data");
 		if($save){
 			return json_encode(array('status'=>1));
 		}
 	}
 	function delete_appointment(){
 		extract($_POST);
-		$delete = $this->db->query("DELETE FROM appointment_list where id = ".$id);
+		$delete = $this->db->query("DELETE FROM appointment_list where id = $id");
 		if($delete)
 			return 1;
 	}
